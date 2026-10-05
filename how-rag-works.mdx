@@ -1,0 +1,33 @@
+---
+title: "How retrieval-augmented generation (RAG) works"
+sidebarTitle: "How RAG Works"
+description: "Understand how Samway AI uses retrieval-augmented generation to find relevant passages in your content and generate accurate, grounded chatbot answers."
+---
+
+Samway AI chatbots use retrieval-augmented generation (RAG). Instead of relying only on what a language model learned during training, the chatbot first looks up relevant information in your content, then uses it to write an answer. This page explains the process and why it matters.
+
+## The RAG pipeline
+
+<Steps>
+  <Step title="Ingest">
+    Your knowledge sources are split into smaller passages and converted into searchable representations (embeddings).
+  </Step>
+  <Step title="Retrieve">
+    When a user asks a question, Samway AI searches your indexed content for the passages most relevant to that question.
+  </Step>
+  <Step title="Generate">
+    The retrieved passages are given to a language model along with the question, and the model writes an answer based on that context.
+  </Step>
+</Steps>
+
+## Why RAG
+
+| Benefit | What it means for you |
+| --- | --- |
+| Accuracy | Answers come from your content, reducing made-up responses. |
+| Freshness | Update your sources and the chatbot reflects the change without retraining a model. |
+| Control | You decide what the chatbot knows by choosing its knowledge sources. |
+
+<Note>
+  A RAG chatbot is only as good as its sources. If an answer is wrong or missing, check whether the information exists in your knowledge sources and is written clearly.
+</Note>

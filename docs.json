@@ -1,0 +1,62 @@
+{
+  "theme": "almond",
+  "name": "Samway AI",
+  "colors": {
+    "primary": "#4F46E5",
+    "light": "#818CF8",
+    "dark": "#4338CA"
+  },
+  "favicon": "/favicon.svg",
+  "footer": {
+    "socials": {
+      "github": "https://github.com/samway-ai"
+    }
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ],
+    "display": "header"
+  },
+  "styling": {
+    "eyebrows": "breadcrumbs"
+  },
+  "navigation": {
+    "groups": [
+      {
+        "group": "Get Started",
+        "icon": "rocket",
+        "pages": [
+          "index",
+          "quickstart",
+          "how-rag-works"
+        ]
+      },
+      {
+        "group": "AI Chatbot",
+        "icon": "message-bot",
+        "pages": [
+          "chatbot/overview",
+          "chatbot/knowledge-sources",
+          "chatbot/customize",
+          "chatbot/deploy"
+        ]
+      },
+      {
+        "group": "Resources",
+        "icon": "life-ring",
+        "pages": [
+          "faq",
+          "support"
+        ]
+      }
+    ]
+  }
+}
