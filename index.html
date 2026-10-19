@@ -3,10 +3,469 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Samway AI</title>
+    <title>Samway AI — RAG-powered AI chatbots for your business</title>
+    <meta name="description" content="Samway AI builds retrieval-augmented generation (RAG) chatbots that answer questions from your own content, plus more tools for the AI era.">
+    <meta name="theme-color" content="#4F46E5">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234F46E5'/><path d='M9 12a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3h-5l-4 3v-3a2 2 0 0 1-2-2z' fill='white'/></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-light: #818CF8;
+            --primary-dark: #4338CA;
+            --accent: #06B6D4;
+            --bg: #FAFAFF;
+            --surface: #FFFFFF;
+            --surface-2: #F3F4FB;
+            --text: #0F1222;
+            --muted: #5B6178;
+            --border: #E4E6F2;
+            --shadow: 0 1px 2px rgba(15, 18, 34, .04), 0 12px 32px -12px rgba(79, 70, 229, .18);
+            --radius: 16px;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0B0D17;
+                --surface: #121528;
+                --surface-2: #181C33;
+                --text: #EEF0FF;
+                --muted: #A0A6C4;
+                --border: #262B47;
+                --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 16px 40px -16px rgba(0, 0, 0, .6);
+            }
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0;
+            font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+        a { color: inherit; text-decoration: none; }
+        .container { width: 100%; max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+
+        /* Nav */
+        .nav {
+            position: sticky; top: 0; z-index: 50;
+            backdrop-filter: saturate(180%) blur(14px);
+            -webkit-backdrop-filter: saturate(180%) blur(14px);
+            background: color-mix(in srgb, var(--bg) 78%, transparent);
+            border-bottom: 1px solid var(--border);
+        }
+        .nav .container { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+        .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.1rem; letter-spacing: -.01em; }
+        .logo {
+            width: 32px; height: 32px; border-radius: 9px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: grid; place-items: center; color: #fff;
+            box-shadow: 0 6px 16px -6px var(--primary);
+        }
+        .nav-links { display: flex; align-items: center; gap: 28px; font-size: .95rem; color: var(--muted); }
+        .nav-links a:hover { color: var(--text); }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 12px 20px; border-radius: 12px; font-weight: 600; font-size: .95rem;
+            transition: transform .15s ease, box-shadow .2s ease, background .2s ease;
+        }
+        .btn:hover { transform: translateY(-1px); }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff; box-shadow: 0 10px 24px -10px var(--primary);
+        }
+        .btn-primary:hover { box-shadow: 0 14px 30px -10px var(--primary); }
+        .btn-ghost { border: 1px solid var(--border); background: var(--surface); }
+        .btn-sm { padding: 8px 14px; font-size: .9rem; border-radius: 10px; }
+
+        /* Hero */
+        .hero { position: relative; padding: 96px 0 80px; overflow: hidden; }
+        .hero::before {
+            content: ""; position: absolute; inset: -40% -10% auto -10%; height: 900px; z-index: -1;
+            background:
+                radial-gradient(600px 380px at 20% 30%, color-mix(in srgb, var(--primary) 26%, transparent), transparent 70%),
+                radial-gradient(520px 360px at 85% 20%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 70%);
+            filter: blur(10px);
+        }
+        .hero-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 56px; align-items: center; }
+        .eyebrow {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 6px 12px; border-radius: 999px; font-size: .82rem; font-weight: 600;
+            color: var(--primary); background: color-mix(in srgb, var(--primary) 10%, var(--surface));
+            border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent);
+        }
+        .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 20%, transparent); }
+        h1 {
+            font-size: clamp(2.4rem, 5.4vw, 4rem); line-height: 1.05; letter-spacing: -.035em;
+            margin: 20px 0 18px; font-weight: 800;
+        }
+        .gradient-text {
+            background: linear-gradient(120deg, var(--primary), var(--primary-light) 45%, var(--accent));
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+        .lead { font-size: 1.15rem; color: var(--muted); max-width: 34em; margin: 0 0 32px; }
+        .cta-row { display: flex; flex-wrap: wrap; gap: 12px; }
+
+        /* Chat mock */
+        .chat {
+            background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
+            box-shadow: var(--shadow); overflow: hidden;
+        }
+        .chat-head { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--border); }
+        .chat-head .logo { width: 28px; height: 28px; border-radius: 8px; }
+        .chat-title { font-weight: 600; font-size: .95rem; }
+        .chat-status { font-size: .78rem; color: #10B981; display: flex; align-items: center; gap: 6px; }
+        .chat-status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+        .chat-body { padding: 20px 18px; display: flex; flex-direction: column; gap: 12px; min-height: 300px; }
+        .msg { max-width: 85%; padding: 10px 14px; border-radius: 14px; font-size: .92rem; opacity: 0; transform: translateY(6px); animation: pop .5s ease forwards; }
+        .msg.user { align-self: flex-end; background: var(--primary); color: #fff; border-bottom-right-radius: 4px; animation-delay: .3s; }
+        .msg.bot { align-self: flex-start; background: var(--surface-2); border-bottom-left-radius: 4px; animation-delay: 1.4s; }
+        .source {
+            display: inline-flex; align-items: center; gap: 6px; margin-top: 8px;
+            font-size: .76rem; color: var(--muted); padding: 4px 8px; border-radius: 8px;
+            background: var(--surface); border: 1px solid var(--border);
+        }
+        .typing { align-self: flex-start; display: flex; gap: 4px; padding: 12px 14px; background: var(--surface-2); border-radius: 14px; animation: fadeOut .2s ease 1.3s forwards; }
+        .typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: blink 1s infinite; }
+        .typing span:nth-child(2) { animation-delay: .15s; }
+        .typing span:nth-child(3) { animation-delay: .3s; }
+        .chat-input { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--border); }
+        .chat-input div { flex: 1; padding: 10px 14px; border-radius: 10px; background: var(--surface-2); color: var(--muted); font-size: .9rem; }
+        .chat-input button { border: 0; border-radius: 10px; width: 40px; background: var(--primary); color: #fff; display: grid; place-items: center; }
+        @keyframes pop { to { opacity: 1; transform: none; } }
+        @keyframes blink { 0%, 100% { opacity: .3; } 50% { opacity: 1; } }
+        @keyframes fadeOut { to { opacity: 0; height: 0; padding: 0; margin: -6px 0; } }
+
+        /* Sections */
+        section { padding: 88px 0; }
+        .section-head { text-align: center; max-width: 640px; margin: 0 auto 52px; }
+        .section-head .kicker { color: var(--primary); font-weight: 700; font-size: .85rem; letter-spacing: .08em; text-transform: uppercase; }
+        h2 { font-size: clamp(1.8rem, 3.6vw, 2.6rem); letter-spacing: -.025em; line-height: 1.15; margin: 10px 0 14px; }
+        .section-head p { color: var(--muted); font-size: 1.05rem; margin: 0; }
+
+        .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .card {
+            background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+            padding: 28px; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+        }
+        .card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: color-mix(in srgb, var(--primary) 35%, var(--border)); }
+        .icon {
+            width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; margin-bottom: 18px;
+            color: var(--primary); background: color-mix(in srgb, var(--primary) 12%, var(--surface));
+        }
+        .card h3 { margin: 0 0 8px; font-size: 1.1rem; letter-spacing: -.01em; }
+        .card p { margin: 0; color: var(--muted); font-size: .95rem; }
+
+        /* RAG pipeline */
+        .pipeline-wrap { background: var(--surface-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+        .pipeline { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; counter-reset: step; position: relative; }
+        .step { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; }
+        .step-num {
+            counter-increment: step; width: 36px; height: 36px; border-radius: 50%;
+            display: grid; place-items: center; font-weight: 700; font-size: .9rem; color: #fff;
+            background: linear-gradient(135deg, var(--primary), var(--accent)); margin-bottom: 16px;
+        }
+        .step-num::before { content: counter(step); }
+        .step h3 { margin: 0 0 8px; font-size: 1.1rem; }
+        .step p { margin: 0; color: var(--muted); font-size: .95rem; }
+        .step:not(:last-child)::after {
+            content: "→"; position: absolute; right: -16px; top: 50%; transform: translateY(-50%);
+            color: var(--primary-light); font-weight: 700; font-size: 1.2rem;
+        }
+
+        .benefits { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px; }
+        .benefit { text-align: center; padding: 8px 12px; }
+        .benefit strong { display: block; font-size: 1.05rem; margin-bottom: 4px; }
+        .benefit span { color: var(--muted); font-size: .93rem; }
+
+        /* Quickstart */
+        .timeline { max-width: 720px; margin: 0 auto; display: grid; gap: 14px; }
+        .tl-item { display: flex; gap: 18px; align-items: flex-start; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; }
+        .tl-item .badge {
+            flex: none; width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center;
+            font-weight: 700; font-size: .85rem; color: var(--primary); background: color-mix(in srgb, var(--primary) 12%, var(--surface));
+        }
+        .tl-item h4 { margin: 2px 0 2px; font-size: 1rem; }
+        .tl-item p { margin: 0; color: var(--muted); font-size: .93rem; }
+
+        /* FAQ */
+        .faq { max-width: 760px; margin: 0 auto; display: grid; gap: 12px; }
+        details { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 4px 20px; }
+        details[open] { border-color: color-mix(in srgb, var(--primary) 35%, var(--border)); }
+        summary { cursor: pointer; list-style: none; padding: 16px 0; font-weight: 600; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+        summary::-webkit-details-marker { display: none; }
+        summary::after { content: "+"; font-size: 1.4rem; color: var(--primary); transition: transform .2s ease; }
+        details[open] summary::after { transform: rotate(45deg); }
+        details p { margin: 0 0 18px; color: var(--muted); }
+
+        /* CTA */
+        .cta {
+            position: relative; overflow: hidden; border-radius: 24px; padding: 64px 32px; text-align: center; color: #fff;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary) 50%, #6D5CF6);
+            box-shadow: 0 30px 60px -30px var(--primary);
+        }
+        .cta::before {
+            content: ""; position: absolute; inset: 0;
+            background: radial-gradient(400px 200px at 85% 0%, rgba(6, 182, 212, .45), transparent 70%),
+                        radial-gradient(360px 220px at 0% 100%, rgba(255, 255, 255, .15), transparent 70%);
+        }
+        .cta > * { position: relative; }
+        .cta h2 { color: #fff; margin-top: 0; }
+        .cta p { color: rgba(255, 255, 255, .85); max-width: 520px; margin: 0 auto 28px; font-size: 1.05rem; }
+        .cta .btn { background: #fff; color: var(--primary-dark); }
+
+        footer { padding: 40px 0; border-top: 1px solid var(--border); color: var(--muted); font-size: .9rem; }
+        footer .container { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+        footer a:hover { color: var(--text); }
+
+        /* Reveal on scroll */
+        .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
+        .reveal.in { opacity: 1; transform: none; }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition: none !important; }
+            .msg, .reveal { opacity: 1; transform: none; }
+            .typing { display: none; }
+        }
+
+        @media (max-width: 900px) {
+            .hero { padding: 64px 0 56px; }
+            .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+            .cards, .pipeline, .benefits { grid-template-columns: 1fr; }
+            .step:not(:last-child)::after { content: "↓"; right: 50%; top: auto; bottom: -22px; transform: translateX(50%); }
+            .pipeline { gap: 28px; }
+            .nav-links .hide-sm { display: none; }
+            section { padding: 64px 0; }
+        }
+        @media (max-width: 480px) {
+            .container { padding: 0 16px; }
+            .nav-links { gap: 14px; }
+            .cta { padding: 48px 20px; }
+        }
+    </style>
 </head>
 <body>
-    <h1>Samway AI</h1>
-    <p>Welcome to Samway AI</p>
+    <nav class="nav">
+        <div class="container">
+            <a href="#" class="brand">
+                <span class="logo">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </span>
+                Samway AI
+            </a>
+            <div class="nav-links">
+                <a href="#features" class="hide-sm">Features</a>
+                <a href="#how-it-works" class="hide-sm">How it works</a>
+                <a href="#faq" class="hide-sm">FAQ</a>
+                <a href="https://github.com/samway-ai" class="btn btn-ghost btn-sm" target="_blank" rel="noopener">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container hero-grid">
+            <div>
+                <span class="eyebrow"><span class="dot"></span> Tools for the AI era</span>
+                <h1>AI chatbots that answer from <span class="gradient-text">your own content</span></h1>
+                <p class="lead">Samway AI builds retrieval-augmented generation (RAG) chatbots that stay accurate, relevant, and grounded in your documents — not generic model knowledge.</p>
+                <div class="cta-row">
+                    <a href="#get-started" class="btn btn-primary">
+                        Get started
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+                    </a>
+                    <a href="#how-it-works" class="btn btn-ghost">How RAG works</a>
+                </div>
+            </div>
+
+            <div class="chat" aria-label="Example chatbot conversation">
+                <div class="chat-head">
+                    <span class="logo">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </span>
+                    <div>
+                        <div class="chat-title">Product Help</div>
+                        <div class="chat-status">Online</div>
+                    </div>
+                </div>
+                <div class="chat-body">
+                    <div class="msg user">Do I need to retrain the bot when my docs change?</div>
+                    <div class="typing"><span></span><span></span><span></span></div>
+                    <div class="msg bot">
+                        Nope! Just update your knowledge sources. Once they're re-indexed, I'll use the new content in my answers automatically.
+                        <div class="source">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+                            Source: knowledge-sources.md
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <div>Ask a question…</div>
+                    <button type="button" aria-label="Send" tabindex="-1">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section id="features">
+        <div class="container">
+            <div class="section-head reveal">
+                <div class="kicker">Why Samway AI</div>
+                <h2>Answers you can trust</h2>
+                <p>A chatbot that knows your business because it reads your content before it responds.</p>
+            </div>
+            <div class="cards">
+                <div class="card reveal">
+                    <div class="icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                    </div>
+                    <h3>Grounded answers</h3>
+                    <p>The chatbot retrieves relevant passages from your knowledge sources before it responds, reducing made-up answers.</p>
+                </div>
+                <div class="card reveal">
+                    <div class="icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                    </div>
+                    <h3>Your content, your bot</h3>
+                    <p>Train it on the documents, pages, and FAQs that matter to your users. You decide what it knows.</p>
+                </div>
+                <div class="card reveal">
+                    <div class="icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
+                    </div>
+                    <h3>Built for what's next</h3>
+                    <p>The chatbot is the first of a growing set of practical AI tools from Samway AI.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="how-it-works" class="pipeline-wrap">
+        <div class="container">
+            <div class="section-head reveal">
+                <div class="kicker">How it works</div>
+                <h2>Retrieval-augmented generation</h2>
+                <p>Instead of relying only on what a model learned in training, the chatbot looks up your content first, then writes the answer.</p>
+            </div>
+            <div class="pipeline">
+                <div class="step reveal">
+                    <div class="step-num"></div>
+                    <h3>Ingest</h3>
+                    <p>Your knowledge sources are split into passages and converted into searchable embeddings.</p>
+                </div>
+                <div class="step reveal">
+                    <div class="step-num"></div>
+                    <h3>Retrieve</h3>
+                    <p>When a user asks a question, Samway AI finds the passages most relevant to it.</p>
+                </div>
+                <div class="step reveal">
+                    <div class="step-num"></div>
+                    <h3>Generate</h3>
+                    <p>A language model writes an answer using the retrieved passages as context.</p>
+                </div>
+            </div>
+            <div class="benefits">
+                <div class="benefit reveal"><strong>Accuracy</strong><span>Answers come from your content.</span></div>
+                <div class="benefit reveal"><strong>Freshness</strong><span>Update sources — no model retraining.</span></div>
+                <div class="benefit reveal"><strong>Control</strong><span>You choose exactly what it knows.</span></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="get-started">
+        <div class="container">
+            <div class="section-head reveal">
+                <div class="kicker">Quickstart</div>
+                <h2>Live in five steps</h2>
+                <p>From account setup to a chatbot answering questions on your site.</p>
+            </div>
+            <div class="timeline">
+                <div class="tl-item reveal"><span class="badge">1</span><div><h4>Get access</h4><p>Contact the Samway AI team to get an account.</p></div></div>
+                <div class="tl-item reveal"><span class="badge">2</span><div><h4>Create a chatbot</h4><p>Give it a name that reflects its purpose, like "Customer Support" or "Product Help".</p></div></div>
+                <div class="tl-item reveal"><span class="badge">3</span><div><h4>Add knowledge sources</h4><p>Upload documents or content. Samway AI indexes it so the bot can retrieve it.</p></div></div>
+                <div class="tl-item reveal"><span class="badge">4</span><div><h4>Test it</h4><p>Ask the questions your users will ask, then refine sources where answers miss.</p></div></div>
+                <div class="tl-item reveal"><span class="badge">5</span><div><h4>Deploy</h4><p>Match your brand and add the chatbot to your website or app.</p></div></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="faq" class="pipeline-wrap">
+        <div class="container">
+            <div class="section-head reveal">
+                <div class="kicker">FAQ</div>
+                <h2>Common questions</h2>
+            </div>
+            <div class="faq">
+                <details class="reveal">
+                    <summary>What is Samway AI?</summary>
+                    <p>Samway AI is an organization building AI products for the AI era. Its flagship product is a RAG-based chatbot that answers questions from your own content.</p>
+                </details>
+                <details class="reveal">
+                    <summary>What does RAG mean?</summary>
+                    <p>Retrieval-augmented generation. The chatbot retrieves relevant passages from your knowledge sources and uses them to generate an answer.</p>
+                </details>
+                <details class="reveal">
+                    <summary>Why did the chatbot give a wrong or incomplete answer?</summary>
+                    <p>The information may be missing, outdated, or unclear in your knowledge sources. Add or update the relevant content and test again.</p>
+                </details>
+                <details class="reveal">
+                    <summary>Do I need to retrain the chatbot when my content changes?</summary>
+                    <p>No model retraining is needed. Update your knowledge sources and the chatbot uses the new content once it is indexed.</p>
+                </details>
+                <details class="reveal">
+                    <summary>Does Samway AI offer more than the chatbot?</summary>
+                    <p>Yes. The chatbot is the first of a growing set of AI tools. Contact the team to learn what is available.</p>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <div class="cta reveal">
+                <h2>Ready to launch your chatbot?</h2>
+                <p>Talk to the Samway AI team and get a chatbot answering from your content.</p>
+                <a href="https://github.com/samway-ai" class="btn" target="_blank" rel="noopener">
+                    Get in touch
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="brand">
+                <span class="logo">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </span>
+                Samway AI
+            </div>
+            <div>&copy; <span id="year">2026</span> Samway AI · <a href="https://github.com/samway-ai" target="_blank" rel="noopener">GitHub</a></div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById("year").textContent = new Date().getFullYear();
+        const els = document.querySelectorAll(".reveal");
+        if ("IntersectionObserver" in window) {
+            const io = new IntersectionObserver((entries) => {
+                entries.forEach((e) => {
+                    if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+                });
+            }, { threshold: 0.12 });
+            els.forEach((el) => io.observe(el));
+        } else {
+            els.forEach((el) => el.classList.add("in"));
+        }
+    </script>
 </body>
 </html>
